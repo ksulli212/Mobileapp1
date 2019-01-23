@@ -1,69 +1,112 @@
 var inputBox;
 
-function addName(_name){
-$('#input').before('<div class="me-want contact-name panel-body"><span class="glyhpicon glyhpicon-minus" aria-hidden="true"/>');
+function addItem(item) {
 
-  var it = $('.me-want');
-  it.fadeout(0);
-  it.fadeIn(1000);
-  it.removeClass('me-want');
-  it.hover(addRemoveIcon, addRemoveIcon);
-}
+	$('#input').before('<div class="me-want to-do panel-body"><span class="glyphicon glyphicon-minus" aria-hidden="true" /> ' + item + '</div>');
 
-function saveList() {
-  var list = [];
-  $('#list .conact-name').each(function(){ list.push($(this).text())});
-  var cookie = list.join(', ');
-  cookie = cookie.substring(1, cookie.length);
-
-  console.log('Saving cookie as ""' + cookie + '""');
-  $.cookie('list', cookie, {expires: 180});
-  console.log('Cookie: ' +$.cookie('list'));
-}
-
-function loadList() {
-
+	var it = $('.me-want');
+	it.fadeOut(0);
+	it.fadeIn(1000);
+	it.removeClass('me-want');
+	it.hover(addRemoveIcon, addRemoveIcon);
 
 }
+
+
+/*function saveList() {
+	var list = [];
+	$('#list .to-do').each(function() { list.push($(this).text()) });
+	var cookie = list.join(', ');
+	cookie = cookie.substring(1, cookie.length);
+	console.log('Saving cookie as "' + cookie + '"');
+	$.cookie('list', cookie, { expires: 90 });
+	console.log('Cookie: ' + $.cookie('list'));
+}*/
+
+/*function loadList() {
+	var items = $.cookie('list');
+	console.log("Loaded cookie as " + items);
+	if(items === undefined || items == '')
+		return;
+	items = items.split(', ');
+	for (i in items) {
+		addItem(items[i]);
+	}
+}*/
+
 function add() {
-  if (inputBox.val() == '') {
-      console.log("No Name listed");
-      return;
-    }
 
-    addName(inputBox.val());
-    inputBox.val('');
+	if (inputBox.val() == '') {
+		console.log("Nothing in form!");
+		return;
+	}
+
+
+	addItem(inputBox.val());
+	inputBox.val('');
+
+	//saveList();
+
 }
 
-function remove() {
+function remove(element) {
+
+	var item = $(this);
+
+	item.find('span').removeClass("glyphicon-trash");
+	item.find('span').removeClass("text-warning");
+	item.find('span').addClass("glyphicon-ok");
+	item.fadeOut(1000, function() {
+		item.remove();
+		//saveList();
+	});
 
 }
-
 
 function clear() {
-  var name = $('.contact-name');
-  var clearname = name.find('span');
 
-  clearname.removeClass('glyphicon-minus');
-  clearname.addClass('glyphicon-ok');
-  name.fadeOut(1000, function() {
-    name.remove();
-    saveList();
-  });
+	var items = $('.to-do');
+	var glyph = items.find('span');
+
+	glyph.removeClass('glyphicon-minus');
+	glyph.addClass('glyphicon-ok');
+	items.fadeOut(1000, function() {
+		items.remove();
+		//saveList();
+	});
+
+}
+
+function addRemoveIcon() {
+
+	var glyph =$(this).find('span');
+
+	if (glyph.hasClass('glyphicon-ok'))
+		return;
+
+	glyph.toggleClass('glyphicon-minus');
+	glyph.toggleClass('glyphicon-trash');
+	glyph.toggleClass('text-warning');
+
 }
 
 function onKeyPress(event) {
-  if(event.keyCode = 13)
-  add();
-}
-$(document).ready(function)() {
-  inputBox = $('input[name="add-to-list"]');
 
-  $('#add').click(add);
-  $('#clear').click(clear);
-  inputBox.keypress(onKeyPress);
-  $('#list').on('click', '.contact-name', remove);
+	if (event.keyCode == 13)
+		add();
 
-  loadList();
-  $('#script-error').remove();
 }
+
+$(document).ready(function() {
+
+	inputBox = $('input[name="add-to-list"]');
+
+	$('#add').click(add);
+	$('#clear').click(clear);
+	inputBox.keypress(onKeyPress);
+	$('#list').on('click', '.to-do', remove);
+
+	loadList();
+	$('#script-error').remove();
+
+});
